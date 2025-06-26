@@ -1,0 +1,55 @@
+# Deployment for Java Spring Boot application
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-service
+  labels:
+    app: book-service
+spec:
+  replicas: 2  # Run 2 instances of your app for reliability
+  selector:
+    matchLabels:
+      app: book-service
+  template:
+    metadata:
+      labels:
+        app: book-service
+    spec:
+      containers:
+      - name: book-service
+        image: book-service:latest  # Your Docker image
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        # Database connection settings
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://postgres-service:5432/bookdb"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "bookuser"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "bookpass"
+        - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+          value: "create-drop"  # Creates tables automatically
+        - name: SPRING_JPA_SHOW_SQL
+          value: "true"  # Shows SQL queries in logs (helpful for learning)
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        # Health check - Kubernetes will restart container if this fails
+        livenessProbe:
+          httpGet:
+            path: /books
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /books
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 5

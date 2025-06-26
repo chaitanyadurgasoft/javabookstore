@@ -1,0 +1,112 @@
+# Step-by-Step Deployment Guide
+
+## Prerequisites
+- Java 17 installed
+- Maven installed
+- Docker installed
+- Kubernetes cluster running (minikube, kind, or cloud provider)
+- kubectl configured
+
+## Step 1: Create the Project Structure
+Create the directories and copy all the files as shown in the directory structure.
+
+## Step 2: Build the Java Application
+```bash
+# Navigate to your project directory
+cd simple-book-service
+
+# Build the application (this creates the jar file)
+mvn clean package -DskipTests
+
+# You should see: target/book-service-1.0.0.jar
+```
+
+## Step 3: Build Docker Image
+```bash
+# Build Docker image for your application
+docker build -t book-service:latest .
+
+# Verify the image was created
+docker images | grep book-service
+```
+
+## Step 4: Deploy to Kubernetes
+
+### Deploy Database First:
+```bash
+# Apply PostgreSQL StatefulSet and Service
+kubectl apply -f kubernetes/postgres-statefulset.yaml
+kubectl apply -f kubernetes/postgres-service.yaml
+
+# Wait for database to be ready (this may take a minute)
+kubectl get pods -w
+# Wait until you see: postgres-0   1/1   Running
+```
+
+### Deploy Application:
+```bash
+# Apply Application Deployment and Service
+kubectl apply -f kubernetes/app-deployment.yaml
+kubectl apply -f kubernetes/app-service.yaml
+
+# Check if everything is running
+kubectl get pods
+kubectl get services
+```
+
+## Step 5: Test Your Application
+
+### Get the Application URL:
+```bash
+# If using minikube:
+minikube service book-service --url
+
+# Or check service status:
+kubectl get service book-service
+```
+
+### Test the API:
+```bash
+# Get all books (should return empty list initially)
+curl http://YOUR_SERVICE_URL/books
+
+# Add a new book
+curl -X POST http://YOUR_SERVICE_URL/books \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Learning Kubernetes", "author": "John Doe"}'
+
+# Get all books again (should now show your book)
+curl http://YOUR_SERVICE_URL/books
+```
+
+## Troubleshooting
+
+### Check Application Logs:
+```bash
+# Get pod names
+kubectl get pods
+
+# Check application logs
+kubectl logs book-service-XXXXXXXX-XXXXX
+
+# Check database logs
+kubectl logs postgres-0
+```
+
+### Common Issues:
+1. **Database not ready**: Wait longer for postgres pod to be Running
+2. **Image not found**: Make sure Docker image is built and available
+3. **Connection refused**: Check if services are running and ports are correct
+
+## Understanding What Happens
+
+1. **PostgreSQL StatefulSet**: Creates a persistent database that survives restarts
+2. **Java Application**: Connects to database and provides REST API
+3. **Services**: Make your application accessible
+4. **Load Balancer**: Distributes traffic between your app instances
+
+## API Endpoints
+- `GET /books` - List all books
+- `POST /books` - Add a new book
+- `GET /books/{id}` - Get specific book
+- `DELETE /books/{id}` - Delete a book

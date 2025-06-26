@@ -1,0 +1,16 @@
+# Service to make PostgreSQL accessible within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  labels:
+    app: postgres
+spec:
+  type: ClusterIP  # Only accessible within Kubernetes cluster
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: postgres
