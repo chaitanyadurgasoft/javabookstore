@@ -1,0 +1,43 @@
+# Deployment for Frontend (React/HTML/CSS/JS)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-frontend
+  labels:
+    app: book-frontend
+spec:
+  replicas: 2  # Run 2 instances for reliability
+  selector:
+    matchLabels:
+      app: book-frontend
+  template:
+    metadata:
+      labels:
+        app: book-frontend
+    spec:
+      containers:
+      - name: book-frontend
+        image: chaitanyamanikumar/book-frontend:latest  # Your frontend Docker image
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5

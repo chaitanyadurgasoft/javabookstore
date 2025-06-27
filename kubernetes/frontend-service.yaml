@@ -1,0 +1,16 @@
+# Service to make frontend accessible from browser
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-frontend
+  labels:
+    app: book-frontend
+spec:
+  type: NodePort # Makes frontend accessible from outside
+  ports:
+  - port: 80          # External port
+    targetPort: 80    # Internal port (nginx default)
+    protocol: TCP
+    name: http
+  selector:
+    app: book-frontend

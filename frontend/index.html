@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 My Book Library</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <h1>📚 My Digital Library</h1>
+            <p>Manage your book collection easily</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        
+        <!-- Add Book Section -->
+        <section class="add-book-section">
+            <h2>✨ Add New Book</h2>
+            <form id="addBookForm" class="book-form">
+                <div class="form-group">
+                    <label for="bookTitle">📖 Book Title</label>
+                    <input type="text" id="bookTitle" placeholder="Enter book title..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bookAuthor">✍️ Author</label>
+                    <input type="text" id="bookAuthor" placeholder="Enter author name..." required>
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    <span class="btn-text">Add Book</span>
+                    <span class="btn-loading hidden">Adding...</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Books List Section -->
+        <section class="books-section">
+            <div class="section-header">
+                <h2>📚 Your Books</h2>
+                <button id="refreshBtn" class="btn-secondary">🔄 Refresh</button>
+            </div>
+            
+            <!-- Loading indicator -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Loading books...</p>
+            </div>
+            
+            <!-- Error message -->
+            <div id="errorMessage" class="error-message hidden">
+                <p>❌ Something went wrong. Please try again.</p>
+            </div>
+            
+            <!-- Empty state -->
+            <div id="emptyState" class="empty-state hidden">
+                <div class="empty-icon">📖</div>
+                <h3>No books yet!</h3>
+                <p>Add your first book using the form above.</p>
+            </div>
+            
+            <!-- Books container -->
+            <div id="booksContainer" class="books-grid">
+                <!-- Books will be added here by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Success message popup -->
+    <div id="successMessage" class="success-popup hidden">
+        <div class="success-content">
+            <span class="success-icon">✅</span>
+            <span class="success-text">Book added successfully!</span>
+        </div>
+    </div>
+
+    <!-- Delete confirmation modal -->
+    <div id="deleteModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>🗑️ Delete Book</h3>
+            <p>Are you sure you want to delete this book?</p>
+            <div class="modal-actions">
+                <button id="cancelDelete" class="btn-secondary">Cancel</button>
+                <button id="confirmDelete" class="btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
